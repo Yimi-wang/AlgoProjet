@@ -28,4 +28,4 @@ class KNNClasses:
         self.data.add(add_element)
 
     def add_vector(self,label:str,vector:list) -> None:
-        pass
+        
