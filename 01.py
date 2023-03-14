@@ -28,6 +28,10 @@ class KNNClasses:
         self.data.add(add_element)
 
     def add_vector(self,label:str,vector:dict) -> None:
-        #添加元素。
-		
-        pass
+        self.element[label].add(vector)
+        
+    def del_class(self,label:str)->None:
+        try:
+            del self.element[label]
+        except KeyError:
+            print("le label n'existe pas")
