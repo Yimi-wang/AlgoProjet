@@ -27,5 +27,7 @@ class KNNClasses:
         add_element={"label":label,"vectors":vectors}
         self.data.add(add_element)
 
-    def add_vector(self,label:str,vector:list) -> None:
-        
+    def add_vector(self,label:str,vector:dict) -> None:
+        #添加元素。
+		
+        pass
