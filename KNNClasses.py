@@ -43,15 +43,15 @@ class KNNClasses:
                 return
         print("Erreur,Label ne trouve pas.")
 
-    def save_as_json(self,filename:str)->None:
+    def save_as_json(self,filename:str)->None: #测试通过
         data_dict={'description':self.description,"data":self.data}
         try:
             with open(filename,'w') as f:
-                json.dump(data_dict)
+                json.dump(data_dict,f)
         except IOError:
             print("Erreur de ouvrir le fichier")
     
-    def load_as_json(self,filename:str)->None:
+    def load_as_json(self,filename:str)->None: # 测试通过
         try:
             with open(filename) as f:
                 data_json=json.load(f)
@@ -59,6 +59,14 @@ class KNNClasses:
             print("Erreur de ouvrir le fichier")
         self.description=data_json["description"]
         self.data=data_json["data"]
+    def classify(vector:list,k:int,sim_func:function):
+        pass
+    '''针对数据集中的每个类别，找出与 vector 最相似的前 k 个向量
+对于每个类别，计算其前 k 个向量的平均相似度
+将每个类别的标签和平均相似度组成一个二元组，并加入到候选类别列表中
+对候选类别列表按照相似度从高到低排序，并返回排序后的列表'''
+
+
 #测试用函数
     def printjson(self):#测试通过
         print("description: "+self.description)

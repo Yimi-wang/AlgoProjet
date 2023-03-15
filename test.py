@@ -31,6 +31,7 @@ class test:
         ]
         Kcl=KNNClasses(description,data)
         Kcl.printjson() 
+        Kcl.save_as_json("01.json")
         label="test_4"
         vectors=[
 			{ "key_4_1_1": 9.0, "key_4_1_2":9.0 },
@@ -38,9 +39,6 @@ class test:
             { "key_4_3_1": 9.7, "key_4_3_2":9.6 }
             ]
         Kcl.add_class(label,vectors)
-        Kcl.printjson()
         Kcl.add_vector(label,{"key_5_3_1": 11.1, "key_5_3_2":1.11})
+        Kcl.load_as_json("01.json")
         Kcl.printjson()
-        Kcl.del_class(label)
-        Kcl.printjson()
-        Kcl.del_class(label)
