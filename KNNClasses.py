@@ -90,7 +90,6 @@ class KNNClasses:
         # 使用 heapq 对类别分数进行排序
         sorted_class_score = heapq.nlargest(len(class_score), class_score.items(), key=lambda x: x[1] * (-1 if not reverse_order else 1))
         print(sorted_class_score)
-        print(reverse_order)
         return sorted_class_score
 
 #测试用函数
@@ -100,9 +99,8 @@ class KNNClasses:
         for item in self.data:
             res+=str(item)+"\n"
         return res
-        print("description: "+self.description)
-        print("data: ")
-        for item in self.data:
-            print(item,end="\n")
+    
+    def changedata(self,new_data):
+        self.data=new_data
     
   

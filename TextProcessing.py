@@ -89,5 +89,5 @@ class TextProcessing:
         texts=cls.read_texts(filenamelist)
         doc_filtres=cls.filtrage(cls.french_stop_list, texts, non_hapax=False)
         doc_filtres_tfidf=cls.tf_idf(doc_filtres)
-        return doc_filtres_tfidf
+        return doc_filtres_tfidf[0]["vectors"][0]
         
