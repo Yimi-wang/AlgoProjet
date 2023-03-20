@@ -25,7 +25,8 @@ class KNNClasses:
     一个list，里面的元素是dict
         '''
         self.data=data
-        self.test_vect = TestVect()
+        #self.test_vect = TestVect()
+
     def add_class(self,label:str,vectors:list) -> None: #测试通过
         add_element={"label":label,"vectors":vectors}
         self.data.append(add_element)
@@ -64,7 +65,7 @@ class KNNClasses:
         
     def classify(self, vector: dict, k: int, sim_func=None):
         if sim_func is None:
-            sim_func = self.test_vect.sim_cosinus
+            sim_func = TestVect.sim_cosinus
 
         class_score = {}
 
@@ -73,26 +74,32 @@ class KNNClasses:
             for vec_dans_class in class_data["vectors"]:
                 res_diff_vect.append((vec_dans_class, sim_func(vector, vec_dans_class)))
 
-            # 对相似度进行排序，选择前k个最相似的向量
-            sorted_similarities = sorted(res_diff_vect, key=lambda x: x[1], reverse=True)
-            top_k = sorted_similarities[:k]
+            # 根据 sim_func 是否为距离度量来决定排序顺序
+            reverse_order = sim_func not in [TestVect.euclidean_distance,TestVect.manhattan_distance]
 
-            # 计算平均相似度并将其添加到类别分数字典中
+            # 使用 heapq 获取前 k 个最相似（或距离最小）的向量
+            if reverse_order:
+                top_k = heapq.nlargest(k, res_diff_vect, key=lambda x: x[1])
+            else:
+                top_k = heapq.nsmallest(k, res_diff_vect, key=lambda x: x[1])
+
+            # 计算平均相似度或距离并将其添加到类别分数字典中
             avg_similarity = sum([similarity for _, similarity in top_k]) / k
             class_score[class_data['label']] = avg_similarity
 
-        # 对类别分数进行排序
-        sorted_class_score = sorted(class_score.items(), key=lambda x: x[1], reverse=True)
+        # 使用 heapq 对类别分数进行排序
+        sorted_class_score = heapq.nlargest(len(class_score), class_score.items(), key=lambda x: x[1] * (-1 if not reverse_order else 1))
         print(sorted_class_score)
+        print(reverse_order)
         return sorted_class_score
-    '''针对数据集中的每个类别，找出与 vector 最相似的前 k 个向量
-对于每个类别，计算其前 k 个向量的平均相似度
-将每个类别的标签和平均相似度组成一个二元组，并加入到候选类别列表中
-对候选类别列表按照相似度从高到低排序，并返回排序后的列表'''
-
 
 #测试用函数
     def printjson(self):#测试通过
+        res="description: "+self.description+"\n"
+        res+="data: \n"
+        for item in self.data:
+            res+=str(item)+"\n"
+        return res
         print("description: "+self.description)
         print("data: ")
         for item in self.data:
