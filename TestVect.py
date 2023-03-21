@@ -8,7 +8,6 @@ class TestVect:
 
         if not keys:
             return 0.0
-
         vec1_values = np.array([vec1[key] for key in keys])
         vec2_values = np.array([vec2[key] for key in keys])
 

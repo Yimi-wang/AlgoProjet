@@ -66,31 +66,24 @@ class KNNClasses:
     def classify(self, vector: dict, k: int, sim_func=None):
         if sim_func is None:
             sim_func = TestVect.sim_cosinus
-
-        class_score = {}
-
+        res_diff_vect = {}
         for class_data in self.data:
-            res_diff_vect = []
+            i=0
             for vec_dans_class in class_data["vectors"]:
-                res_diff_vect.append((vec_dans_class, sim_func(vector, vec_dans_class)))
+                i+=1
+                res_diff_vect[class_data["label"]+str(i)]=sim_func(vector, vec_dans_class)
 
-            # 根据 sim_func 是否为距离度量来决定排序顺序
-            reverse_order = sim_func not in [TestVect.euclidean_distance,TestVect.manhattan_distance]
+        # 根据 sim_func 是否为距离度量来决定排序顺序
+        reverse_order = sim_func not in [TestVect.euclidean_distance,TestVect.manhattan_distance]
 
-            # 使用 heapq 获取前 k 个最相似（或距离最小）的向量
-            if reverse_order:
-                top_k = heapq.nlargest(k, res_diff_vect, key=lambda x: x[1])
-            else:
-                top_k = heapq.nsmallest(k, res_diff_vect, key=lambda x: x[1])
+        # 使用 heapq 获取前 k 个最相似（或距离最小）的向量
+        if reverse_order:
+            top_k = heapq.nlargest(k, res_diff_vect, key=res_diff_vect.get)
+        else:
+            top_k = heapq.nsmallest(k, res_diff_vect, key=res_diff_vect.get)
 
-            # 计算平均相似度或距离并将其添加到类别分数字典中
-            avg_similarity = sum([similarity for _, similarity in top_k]) / k
-            class_score[class_data['label']] = avg_similarity
-
-        # 使用 heapq 对类别分数进行排序
-        sorted_class_score = heapq.nlargest(len(class_score), class_score.items(), key=lambda x: x[1] * (-1 if not reverse_order else 1))
-        print(sorted_class_score)
-        return sorted_class_score
+        print(top_k)
+        return top_k
 
 #测试用函数
     def printjson(self):#测试通过

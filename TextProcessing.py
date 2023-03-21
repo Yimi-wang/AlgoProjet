@@ -24,7 +24,7 @@ class TextProcessing:
         return token_freq
 
     @staticmethod
-    def read_texts(file_names: list):
+    def read_texts(dossier_names: list):
         data = []
         tok_grm = re.compile(r"""
                 (?:etc.|p.ex.|cf.|M.)|
@@ -33,13 +33,38 @@ class TextProcessing:
                 .
             """, re.X)
 
-        for file_name in file_names:
-            with open(file_name, mode="r", encoding="utf8") as input_file:
-                tokens = [tok for line in input_file for tok in TextProcessing.tokenize(line.strip(), tok_grm)]
-                vector=[]
-                vector.append(TextProcessing.vectorise(tokens))
-                data.append({'label': os.path.basename(file_name), 'vectors': vector})
+        for dossier_name in dossier_names:
+            filenames = [f.name for f in os.scandir("./TestDocuments/"+dossier_name) if f.is_file()]
+            vector=[]
+            for file_name in filenames:
+                with open("./TestDocuments/"+dossier_name+"/"+file_name, mode="r", encoding="utf8") as input_file:
+                    tokens = [tok for line in input_file for tok in TextProcessing.tokenize(line.strip(), tok_grm)]
+                    vector.append(TextProcessing.vectorise(tokens))
+            data.append({'label': dossier_name, 'vectors': vector})
 
+                
+            # with open(file_name, mode="r", encoding="utf8") as input_file:
+            #     tokens = [tok for line in input_file for tok in TextProcessing.tokenize(line.strip(), tok_grm)]
+            #     vector=[]
+            #     vector.append(TextProcessing.vectorise(tokens))
+            #     data.append({'label': file_name, 'vectors': vector})
+
+        return data
+    @staticmethod
+    def read_text(dossier_name: str):
+        data = []
+        tok_grm = re.compile(r"""
+                (?:etc.|p.ex.|cf.|M.)|
+                \w+(?=(?:-(?:je|tu|ils?|elles?|nous|vous|leur|lui|les?|ce|t-|même|ci|là)))|
+                [\w\-]+'?| # peut-être
+                .
+            """, re.X)
+
+        with open(dossier_name, mode="r", encoding="utf8") as input_file:
+            tokens = [tok for line in input_file for tok in TextProcessing.tokenize(line.strip(), tok_grm)]
+            vector=[]
+            vector.append(TextProcessing.vectorise(tokens))
+            data.append({'label': dossier_name, 'vectors': vector})
         return data
 
     @staticmethod
@@ -48,45 +73,106 @@ class TextProcessing:
 
         for document in documents:
             document_filtre = {"label": document["label"]}
-            ###
-            tokens = document["vectors"][0]
-            ###
-            tokens_filtre = {token: freq for token, freq in tokens.items()
-                             if token.lower() not in stoplist and (not non_hapax or freq > 1)}
             document_filtre["vectors"] = []
-            document_filtre["vectors"].append(tokens_filtre)
+            for tokens in document["vectors"]:
+                tokens_filtre = {token: freq for token, freq in tokens.items()
+                              if token.lower() not in stoplist and (not non_hapax or freq > 1)}
+                document_filtre["vectors"].append(tokens_filtre)
             documents_filtre.append(document_filtre)
+                
+            # ###
+            # tokens = document["vectors"][0]
+            # ###
+            # tokens_filtre = {token: freq for token, freq in tokens.items()
+            #                  if token.lower() not in stoplist and (not non_hapax or freq > 1)}
+            # document_filtre["vectors"] = []
+            # document_filtre["vectors"].append(tokens_filtre)
+            # documents_filtre.append(document_filtre)
 
         return documents_filtre
 
+    # @staticmethod
+    # def tf_idf(documents: list) -> list:
+    #     documents_new = copy.deepcopy(documents)
+    #     mots = {word for doc in documents for word in doc["vectors"][0]}
+    #     freq_doc = {}
+
+    #     for word in mots:
+    #         freq_doc[word] = sum(1 for doc in documents if word in doc["vectors"][0])
+
+    #     for doc in documents_new:
+    #         for word in doc["vectors"][0]:
+    #             doc["vectors"][0][word] /= math.log(1 + freq_doc[word])
+
+    #     return documents_new
+    
     @staticmethod
     def tf_idf(documents: list) -> list:
         documents_new = copy.deepcopy(documents)
-        mots = {word for doc in documents for word in doc["vectors"][0]}
+        mots = {word for doc in documents for vector in doc["vectors"] for word in vector}
         freq_doc = {}
 
         for word in mots:
-            freq_doc[word] = sum(1 for doc in documents if word in doc["vectors"][0])
+            freq_doc[word] = sum(1 for doc in documents for vector in doc["vectors"] if word in vector)
 
         for doc in documents_new:
-            for word in doc["vectors"][0]:
-                doc["vectors"][0][word] /= math.log(1 + freq_doc[word])
-
+            for vector in doc["vectors"]:
+                for word in vector:
+                    vector[word]/= math.log(1 + freq_doc[word])
         return documents_new
+    # @classmethod
+    # def tf_idf (documents:list)->list:
+    #     """
+    #         Calcul du TF.IDF pour une liste de documents
+    #         Input : 
+    #         arg1 : list(dict) : une liste de documents ...
+    #         Output : 
+    #         valeur de retour : une liste de documents avec une modification des fréq
+    #         associées à chaque mot (on divise par le log de la fréq de documents)
+
+    #     """
+    #     documents_new=copy.deepcopy(documents)
+
+    #     #création d'un dict contenant tous les mots de tous les docs
+    #     mots=set()
+
+    #     # 1. on crée l'ensemble de tous les mots
+    #     # on parcours les documents
+    #     for doc in documents:
+    #         #pour chaque mot du doc étant dans notre vecteur doc
+    #         #word = notre variable qui récupère chaque mot
+    #         for word in doc["vect"]:
+    #             mots.add(word)
+
+    #     # 2. on parcourt tous les mots pour calculer la fréquence de doc de chacun
+    #     freq_doc={}
+    #     for word in mots:
+    #         # on parcourt les documents
+    #         for doc in documents:
+    #             if word in doc["vect"]:
+    #                 if word not in freq_doc:
+    #                     freq_doc[word]=1
+    #                 else :
+    #                     freq_doc[word]+=1
+            
+    #     # 3. on parcourt les docs mot par mot pour mettre à jour la fréquence
+    #     for doc in documents_new:
+    #         for word in doc["vect"]:
+    #             doc["vect"][word]=doc["vect"][word] / math.log(1+freq_doc[word])
+
+    #     return documents_new
     
     @classmethod
     def TestDocument_to_vector(cls)->list:
-        filename=[ "./TestDocuments"+"/"+f for f in os.listdir('./TestDocuments') if f[0]!="." and not os.path.isdir('./TestDocuments'+"/"+f)]
-        texts=cls.read_texts(filename)
+        dossiername=[f.name for f in os.scandir("./TestDocuments") if f.is_dir()]
+        texts=cls.read_texts(dossiername)
         doc_filtres=cls.filtrage(cls.french_stop_list, texts, non_hapax=False)
         doc_filtres_tfidf=cls.tf_idf(doc_filtres)
         return doc_filtres_tfidf
 
     @classmethod
     def document_to_vector(cls,filename:str)->list:
-        filenamelist=[]
-        filenamelist.append(filename)
-        texts=cls.read_texts(filenamelist)
+        texts=cls.read_text(filename)
         doc_filtres=cls.filtrage(cls.french_stop_list, texts, non_hapax=False)
         doc_filtres_tfidf=cls.tf_idf(doc_filtres)
         return doc_filtres_tfidf[0]["vectors"][0]
