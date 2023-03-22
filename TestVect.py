@@ -1,74 +1,138 @@
 import math
 import numpy as np
-import re
-import copy
-class TestVect:    
-    def sim_cosinus(vec1: dict, vec2: dict) -> float:
-        keys = set(vec1.keys()) & set(vec2.keys())  # 获取共同的键
+"""
+API pour la classe TestVect :
 
+1. sim_cosinus(vec1: dict, vec2: dict) -> float:
+    Calcule la similarité cosinus entre deux vecteurs représentés par des dictionnaires.
+    Arguments :
+        vec1 (dict) : Premier vecteur sous forme de dictionnaire.
+        vec2 (dict) : Deuxième vecteur sous forme de dictionnaire.
+    Retour :
+        float : La similarité cosinus entre les deux vecteurs.
+
+2. euclidean_distance(vec1: dict, vec2: dict) -> float:
+    Calcule la distance euclidienne entre deux vecteurs représentés par des dictionnaires.
+    Arguments :
+        vec1 (dict) : Premier vecteur sous forme de dictionnaire.
+        vec2 (dict) : Deuxième vecteur sous forme de dictionnaire.
+    Retour :
+        float : La distance euclidienne entre les deux vecteurs.
+
+3. manhattan_distance(vec1: dict, vec2: dict) -> float:
+    Calcule la distance de Manhattan entre deux vecteurs représentés par des dictionnaires.
+    Arguments :
+        vec1 (dict) : Premier vecteur sous forme de dictionnaire.
+        vec2 (dict) : Deuxième vecteur sous forme de dictionnaire.
+    Retour :
+        float : La distance de Manhattan entre les deux vecteurs.
+
+4. pearson_correlation_coefficient(vect1: dict, vect2: dict) -> float:
+    Calcule le coefficient de corrélation de Pearson entre deux vecteurs représentés par des dictionnaires.
+    Arguments :
+        vec1 (dict) : Premier vecteur sous forme de dictionnaire.
+        vec2 (dict) : Deuxième vecteur sous forme de dictionnaire.
+    Retour :
+        float : Le coefficient de corrélation de Pearson entre les deux vecteurs.
+"""
+
+class TestVect:    
+# Définition de la fonction sim_cosinus pour calculer la similarité cosinus entre deux vecteurs
+    def sim_cosinus(vec1: dict, vec2: dict) -> float:
+        # Obtenir les clés communes entre les deux vecteurs
+        keys = set(vec1.keys()) & set(vec2.keys())
+
+        # Si les vecteurs n'ont pas de clés communes, retourner 0.0
         if not keys:
             return 0.0
+        # Créer des tableaux numpy avec les valeurs des clés communes
         vec1_values = np.array([vec1[key] for key in keys])
         vec2_values = np.array([vec2[key] for key in keys])
 
+        # Calculer le produit scalaire des deux tableaux
         dot_product = np.dot(vec1_values, vec2_values)
+        # Calculer la magnitude de chaque vecteur
+        # ! 修改 需要计算所有 的vector，而不是共有的vector
         magnitude_vec1 = np.linalg.norm(vec1_values)
         magnitude_vec2 = np.linalg.norm(vec2_values)
 
+        # Si l'une des magnitudes est égale à 0, retourner 0.0
         if magnitude_vec1 == 0 or magnitude_vec2 == 0:
             return 0.0
 
+        # Calculer la similarité cosinus en divisant le produit scalaire par le produit des magnitudes
         cosine_sim = dot_product / (magnitude_vec1 * magnitude_vec2)
         return cosine_sim
-    
-    #欧氏距离
-    def euclidean_distance(vec1: dict, vec2: dict)->float:
+
+    # Définition de la fonction euclidean_distance pour calculer la distance euclidienne entre deux vecteurs
+    def euclidean_distance(vec1: dict, vec2: dict) -> float:
         distance = 0
 
-        # 遍历两个字典的所有键
+        # Parcourir toutes les clés des deux dictionnaires
         for key in set(vec1.keys()).union(vec2.keys()):
-            value1 = vec1.get(key, 0)  # 如果键不存在于 dict1 中，返回 0
-            value2 = vec2.get(key, 0)  # 如果键不存在于 dict2 中，返回 0
+            # Récupérer la valeur de la clé dans dict1, sinon retourner 0
+            value1 = vec1.get(key, 0)
+            # Récupérer la valeur de la clé dans dict2, sinon retourner 0
+            value2 = vec2.get(key, 0)
 
+            # Calculer la somme des différences au carré
             distance += (value1 - value2) ** 2
 
+        # Retourner la racine carrée de la distance
         return math.sqrt(distance)
 
-    #曼哈顿距离
-    def manhattan_distance(vec1: dict, vec2: dict)->float:
+    # Définition de la fonction manhattan_distance pour calculer la distance de Manhattan entre deux vecteurs
+    def manhattan_distance(vec1: dict, vec2: dict) -> float:
         distance = 0
 
-        # 遍历两个字典的所有键
+        # Parcourir toutes les clés des deux dictionnaires
         for key in set(vec1.keys()).union(vec2.keys()):
-            value1 = vec1.get(key, 0)  # 如果键不存在于 dict1 中，返回 0
-            value2 = vec2.get(key, 0)  # 如果键不存在于 dict2 中，返回 0
+            # Récupérer la valeur de la clé dans dict1, sinon retourner 0
+            value1 = vec1.get(key, 0)
+            # Récupérer la valeur de la clé dans dict2, sinon retourner 0
+            value2 = vec2.get(key, 0)
 
+            # Calculer la somme des différences absolues
             distance += abs(value1 - value2)
 
         return distance
-    
+        
     def pearson_correlation_coefficient(vect1, vect2):
+        # Intersection des clés des deux dictionnaires
         keys = set(vect1.keys()) & set(vect2.keys())
+        
+        # Extraction des valeurs des deux dictionnaires en utilisant les clés communes
         values1 = [vect1[key] for key in keys]
         values2 = [vect2[key] for key in keys]
         
+        # Vérification que les listes de valeurs ne sont pas vides
         if len(values1) == 0 or len(values2) == 0:
-            raise ValueError("没用公共键")
+            raise ValueError("Pas de key commun.")
         
+        # Calcul du nombre de valeurs communes
         n = len(values1)
+        
+        # Calcul des sommes des valeurs de chaque vecteur
         sum1 = sum(values1)
         sum2 = sum(values2)
         
+        # Calcul des sommes des carrés des valeurs de chaque vecteur
         sum1_sq = sum([pow(v, 2) for v in values1])
         sum2_sq = sum([pow(v, 2) for v in values2])
         
+        # Calcul de la somme des produits des valeurs correspondantes des deux vecteurs
         prod_sum = sum([values1[i] * values2[i] for i in range(n)])
         
+        # Calcul du numérateur de la formule de la corrélation de Pearson
         num = prod_sum - (sum1 * sum2 / n)
+        
+        # Calcul du dénominateur de la formule de la corrélation de Pearson
         den = ((sum1_sq - pow(sum1, 2) / n) * (sum2_sq - pow(sum2, 2) / n)) ** 0.5
         
+        # Vérification que le dénominateur n'est pas égal à zéro
         if den == 0:
             return 0
         
+        # Calcul et retour du coefficient de corrélation de Pearson
         return num / den
     

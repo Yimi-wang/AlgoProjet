@@ -171,7 +171,6 @@ def classify_main():
         Function_value=function_entry.get()
         
         # 在这里调用  方法，并传入输入的参数
-        Kcl.changedata(TextProcessing.TestDocument_to_vector())
         vector_classify=TextProcessing.document_to_vector(Filename_value)
         print(vector_classify)
         match Function_value:
@@ -218,33 +217,10 @@ def classify_main():
     submit_button.grid(row=3, column=1)
 
 if __name__ == "__main__":
-    description="C'est un test"
-    data=[
-        {
-        "label":"test_1",
-        "vectors": [
-        { "key_1_1_1": 1.0, "key_1_1_2":2.0 },
-        { "key_1_2_1": 3.0, "key_1_2_2":3.5 },
-        { "key_1_3_1": 2.5, "key_1_3_2":2.6 }
-        ]
-        },
-        {
-        "label":"test_2",
-        "vectors": [
-        { "key_2_1_1": 5.0, "key_2_1_2":3.0 },
-        { "key_2_2_1": 8.0, "key_2_2_2":7.5 },
-        { "key_2_3_1": 2.7, "key_2_3_2":4.6 }
-        ]
-        },
-        {
-        "label":"test_3",
-        "vectors": [
-        { "key_3_1_1": 1.0, "key_3_1_2":1.58 },
-        { "key_3_2_1": 8.2, "key_3_2_2":2.5 },
-        { "key_3_3_1": 9.5, "key_3_3_2":11.58 }
-        ]
-        }
-    ]
+    with open ("./TestDocuments/description.txt") as input_file:
+        description=input_file.read()
+    data=TextProcessing.TestDocument_to_vector()
+    
     Kcl=KNNClasses(description,data)
     # 创建一个主窗口
     root = tk.Tk()
