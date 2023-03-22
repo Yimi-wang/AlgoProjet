@@ -37,8 +37,23 @@ API pour la classe TestVect :
 """
 
 class TestVect:    
-# Définition de la fonction sim_cosinus pour calculer la similarité cosinus entre deux vecteurs
+    @staticmethod
+    def is_valid_vector(dist):
+        if not isinstance(dist, dict):
+            return False
+        for key, value in dist.items():
+            if not isinstance(key, str):
+                return False
+            if not isinstance(value, (int, float)):
+                return False
+        return True
+    # Définition de la fonction sim_cosinus pour calculer la similarité cosinus entre deux vecteurs
+    @staticmethod
     def sim_cosinus(vec1: dict, vec2: dict) -> float:
+        # Determiner le vec1 et vec2 est une vector ou pas
+        if not (TestVect.is_valid_vector(vec1) and TestVect.is_valid_vector(vec2) ):
+            raise ValueError("vec1 et vec2 doit etre un forme de str:int ou str:float")
+        
         # Obtenir les clés communes entre les deux vecteurs
         keys = set(vec1.keys()) & set(vec2.keys())
 
@@ -52,9 +67,10 @@ class TestVect:
         # Calculer le produit scalaire des deux tableaux
         dot_product = np.dot(vec1_values, vec2_values)
         # Calculer la magnitude de chaque vecteur
-        # ! 修改 需要计算所有 的vector，而不是共有的vector
-        magnitude_vec1 = np.linalg.norm(vec1_values)
-        magnitude_vec2 = np.linalg.norm(vec2_values)
+        vec1_values_tous_vector=np.array(list(vec1.values()))
+        vec2_values_tous_vector=np.array(list(vec2.values()))
+        magnitude_vec1 = np.linalg.norm(vec1_values_tous_vector)
+        magnitude_vec2 = np.linalg.norm(vec2_values_tous_vector)
 
         # Si l'une des magnitudes est égale à 0, retourner 0.0
         if magnitude_vec1 == 0 or magnitude_vec2 == 0:
@@ -65,7 +81,12 @@ class TestVect:
         return cosine_sim
 
     # Définition de la fonction euclidean_distance pour calculer la distance euclidienne entre deux vecteurs
+    @staticmethod
     def euclidean_distance(vec1: dict, vec2: dict) -> float:
+        # Determiner le vec1 et vec2 est une vector ou pas
+        if not (TestVect.is_valid_vector(vec1) and TestVect.is_valid_vector(vec2) ):
+            raise ValueError("vec1 et vec2 doit etre un forme de str:int ou str:float")
+        
         distance = 0
 
         # Parcourir toutes les clés des deux dictionnaires
@@ -74,15 +95,21 @@ class TestVect:
             value1 = vec1.get(key, 0)
             # Récupérer la valeur de la clé dans dict2, sinon retourner 0
             value2 = vec2.get(key, 0)
-
             # Calculer la somme des différences au carré
             distance += (value1 - value2) ** 2
-
+        if distance < 0:
+            # Si la distance est négative, lever une exception ValueError avec un message d'erreur correspondant
+            raise ValueError("La distance euclidienne ne peut pas être négative.")
         # Retourner la racine carrée de la distance
         return math.sqrt(distance)
 
     # Définition de la fonction manhattan_distance pour calculer la distance de Manhattan entre deux vecteurs
+    @staticmethod
     def manhattan_distance(vec1: dict, vec2: dict) -> float:
+        # Determiner le vec1 et vec2 est une vector ou pas
+        if not (TestVect.is_valid_vector(vec1) and TestVect.is_valid_vector(vec2) ):
+            raise ValueError("vec1 et vec2 doit etre un forme de str:int ou str:float")
+        
         distance = 0
 
         # Parcourir toutes les clés des deux dictionnaires
@@ -96,8 +123,12 @@ class TestVect:
             distance += abs(value1 - value2)
 
         return distance
-        
+    @staticmethod
     def pearson_correlation_coefficient(vect1, vect2):
+        # Determiner le vec1 et vec2 est une vector ou pas
+        if not (TestVect.is_valid_vector(vect1) and TestVect.is_valid_vector(vect2) ):
+            raise ValueError("vec1 et vec2 doit etre un forme de str:int ou str:float")
+                
         # Intersection des clés des deux dictionnaires
         keys = set(vect1.keys()) & set(vect2.keys())
         

@@ -56,14 +56,36 @@ class KNNClasses:
         # Ajoute une nouvelle classe à l'objet KNNClasses
         # label (str) : le label de la classe à ajouter
         # vectors (list) : une liste de vecteurs (dictionnaires) associés à cette classe
+        # verifier les donnees
+        if not isinstance(label, str):
+            return "Erreur: le paramètre 'label' doit être une chaîne de caractères."
+        if not isinstance(vectors, list):
+            return "Erreur: le paramètre 'vectors' doit être une liste."
+        for vector in vectors:
+            if not isinstance(vector, dict):
+                return "Erreur: les éléments de 'vectors' doivent être des dictionnaires."
+        for element in self.data:
+            if element["label"] == label:
+                return "Erreur: le label '{}' existe déjà.".format(label)+"Pour ajouter la vector, utilise le methode de Add_Vector."
+        #main
         add_element={"label":label,"vectors":vectors}
         self.data.append(add_element)
+        return "L'action add de class a été effectué avec succès."
 
     def add_vector(self,label:str,vector:dict) -> str: 
         # Ajoute un vecteur à une classe existante en utilisant son label
         # label (str) : le label de la classe à laquelle ajouter le vecteur
         # vector (dict) : un dictionnaire représentant le vecteur à ajouter à la classe
         # Parcourir les éléments dans les données
+        if not isinstance(label, str):
+            return "Erreur: le paramètre 'label' doit être une chaîne de caractères."
+        
+        
+        if not hasattr(self, 'data'):
+            return "L'objet doit avoir des attributs 'data'"
+        
+        if not isinstance(vector, dict):
+            return "Erreur: le paramètre 'vectors' doit être une dict."
         for element in self.data:
             # Vérifier si le label de l'élément correspond au label fourni
             if element['label']==label:
@@ -72,11 +94,15 @@ class KNNClasses:
                 # Retourner un message de succès pour terminer la méthode
                 return "L'ajout de données a été effectué avec succès."
         # Si la méthode n'a pas été interrompue avant, imprimer un message d'échec
-        return "Échec de l'ajout de données."
+        return "Échec de l'ajout de données. Le label n'existe pas."
         
     def del_class(self, label: str) -> str:
         # Cette méthode supprime une classe en utilisant son label.
+        if not isinstance(label, str):
+            return "Erreur: le paramètre 'label' doit être une chaîne de caractères."
         
+        if not hasattr(self, 'data'):
+            return "L'objet doit avoir des attributs 'data'"
         # Parcourir les éléments dans les données de l'objet KNNClasses.
         for element in self.data:
             
@@ -93,7 +119,12 @@ class KNNClasses:
         return "Erreur, Label ne trouve pas."
 
     def save_as_json(self, filename: str) -> str:
+        if not isinstance(filename, str):
+            return "Erreur: le paramètre 'label' doit être une chaîne de caractères."
+        if not hasattr(self, 'description') or not hasattr(self, 'data'):
+            return "L'objet doit avoir des attributs 'description' et 'data'"
         # Créer un dictionnaire contenant la description et les données de l'objet
+
         data_dict = {'description': self.description, "data": self.data}
         
         # Utiliser une instruction try-except pour gérer les erreurs d'ouverture de fichier
@@ -104,10 +135,10 @@ class KNNClasses:
                 json.dump(data_dict, f)
             
             # Retourner un message indiquant que l'enregistrement a réussi
-            return "save succee"
-        except IOError:
+            return "save success"
+        except (IOError, json.JSONDecodeError):
             # Retourner un message d'erreur si l'ouverture du fichier échoue
-            return "Erreur de ouvrir le fichier"
+            return "rreur d'ouverture du fichier"
     
     def load_as_json(self, filename: str) -> str:
         # Essayer d'ouvrir le fichier spécifié par "filename"
@@ -127,6 +158,10 @@ class KNNClasses:
         return "Chargement réussi"
         
     def classify(self, vector: dict, k: int, sim_func=None):
+        
+        if not hasattr(self, 'description') or not hasattr(self, 'data'):
+            return "L'objet doit avoir des attributs 'description' et 'data'"
+                
         # Si la fonction de similarité n'est pas fournie, on utilise la fonction 'sim_cosinus' par défaut.
         if sim_func is None:
             sim_func = TestVect.sim_cosinus
@@ -134,40 +169,63 @@ class KNNClasses:
         res_diff_vect = {}
         # On parcourt chaque classe.
         for class_data in self.data:
-            # On initialise une variable 'i' pour garder la trace du nombre de vecteurs dans la classe.
-            i=0
             # On parcourt chaque vecteur dans la classe.
             for vec_dans_class in class_data["vectors"]:
-                # On incrémente 'i' pour garder la trace du nombre de vecteurs dans la classe.
-                i+=1
                 # On calcule la similarité entre le vecteur d'entrée et le vecteur actuel de la classe.
-                # On stocke le résultat dans le dictionnaire 'res_diff_vect', avec une clé composée du label de la classe et de l'index du vecteur.
-                # On utilise une formatage de chaine pour ajouter des zéros à gauche de l'index pour avoir un formatage uniforme.
-                res_diff_vect[class_data["label"]+"{:03}".format(i)]=sim_func(vector, vec_dans_class)
+                # On stocke le résultat dans le dictionnaire 'res_diff_vect'
+                try:
+                    if class_data["label"] in res_diff_vect:
+                        res_diff_vect[class_data["label"]].append(sim_func(vector, vec_dans_class))
+                    else:
+                        res_diff_vect[class_data["label"]]=[sim_func(vector, vec_dans_class)]
+                except ValueError as e:
+                    print(e)
+                    return str(e)
 
         # On décide de l'ordre de tri en fonction de la fonction de similarité fournie.
         # Si la fonction est une distance, on veut le tri croissant. Sinon, on veut le tri décroissant.
         reverse_order = sim_func not in [TestVect.euclidean_distance,TestVect.manhattan_distance]
 
         # On utilise le module 'heapq' pour obtenir les 'k' éléments les plus similaires (ou les plus proches) du vecteur d'entrée.
+        all_values = [v for values in res_diff_vect.values() for v in values]
         if reverse_order:
-            top_k = heapq.nlargest(k, res_diff_vect.items(), key=lambda x: x[1])
+            top_k = heapq.nlargest(k, all_values)
         else:
-            top_k = heapq.nsmallest(k, res_diff_vect.items(), key=lambda x: x[1])
-        # On extrait les labels de classe à partir des clés des 'k' éléments les plus similaires.
-        res_class=[]
-        for top_k_class in top_k:
-            res_class.append(top_k_class[0][:-3])
-        
-        # On utilise le module 'collections' pour compter le nombre d'occurrences de chaque classe et obtenir la classe la plus fréquente.
-        counter = Counter(res_class)
-        most_common = counter.most_common(1)[0]
+            top_k = heapq.nsmallest(k, all_values)
+
+        result = [[key, [v for v in values if v in top_k]] for key, values in res_diff_vect.items() if set(values).intersection(top_k)]
         # On construit une chaîne de caractères pour afficher le résultat.
-        res="Le type de dossier est "+str(most_common[0]) +". Et le top_"+str(k)+" est :" + str(top_k)
+        res=''
+        for element in result:
+            res+="label: "+str(element[0])+", n:"+str(len(element[1]))+". average_sim :"+str(sum(element[1])/len(element[1]))+"\n"
+        
+        #Le principal objectif de ce code est de trouver le type de document correspondant au résultat le plus fréquent parmi les K résultats. 
+        #Si plusieurs résultats sont les plus fréquents, il retourne celui avec la valeur moyenne la plus élevée (ou la plus basse, en fonction de la fonction de distance utilisée).
+        # Calculer la longueur maximale de la liste
+        max_length = max(len(item[1]) for item in result)
+
+        # Trouver l'élément ayant la plus grande longueur
+        longest_items = [item for item in result if len(item[1]) == max_length]
+
+        # Si l'élément ayant la plus grande longueur est unique, le retourner directement
+        if len(longest_items) == 1:
+            resultdetype = longest_items[0][0]
+        else:
+            # Si plusieurs éléments ont la plus grande longueur, calculer leur valeur moyenne et retourner l'élément avec la valeur moyenne la plus élevée (ou petit)
+            avg_values = [(item[0], sum(item[1]) / len(item[1])) for item in longest_items]
+            if reverse_order:
+                max_avg_key = max(avg_values, key=lambda x: x[1])[0]
+                resultdetype = [item for item in longest_items if item[0] == max_avg_key][0][0]
+            else:
+                min_avg_key = min(avg_values, key=lambda x: x[1])[0]
+                resultdetype = [item for item in longest_items if item[0] == min_avg_key][0][0]
+        res+="Le type de dossier est : " + resultdetype
         return res
 
 
     def printjson(self): 
+        if not hasattr(self, 'description') or not hasattr(self, 'data'):
+            return "L'objet doit avoir des attributs 'description' et 'data'"
         res="description: "+self.description+"\n" # Concaténer la chaîne "description: " avec la description de l'objet
         res+="data: \n" # Ajouter la chaîne "data: \n" à la chaîne précédente
         for item in self.data: # Parcourir chaque élément dans la liste de données de l'objet
