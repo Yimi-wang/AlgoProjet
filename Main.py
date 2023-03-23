@@ -3,7 +3,6 @@ from TestVect import TestVect
 from TextProcessing import TextProcessing
 import tkinter as tk
 import ast    
-import tkinter as tk
 """
 Cet API définit plusieurs fonctions de gestion des événements liés aux différents boutons présents dans l'interface graphique. 
 Ces fonctions permettent d'ajouter ou de supprimer des classes, d'ajouter des vecteurs, de sauvegarder et de charger des données au format JSON, 
