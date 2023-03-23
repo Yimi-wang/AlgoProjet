@@ -265,4 +265,4 @@ float : Le coefficient de corrélation de Pearson entre les deux vecteurs.
 1. Dans "data", les "vectors" sont simplement une liste avec des "vector", et nous ne savons pas à quelle "Nom de dossier" chaque élément est associé. Cela peut rendre difficile l'analyse des résultats plus en détail.  
 2. Pour améliorer l'expérience utilisateur, il serait utile d'ajouter une fonctionnalité qui permet à l'utilisateur de saisir le nom d'un fichier texte, qui sera ensuite converti en vecteur et ajouté à "data".  
 3. Le format de "data" est trop rigide, ce qui peut causer des erreurs si le format change. Il est nécessaire d'améliorer l'adaptation du projet au format de "data".  
-  
+4. Dans la méthode "classify", pour obtenir le résultat final, nous utilisons "resultdetype = [item for item in longest_items if item[0] == max_avg_key][0][0]" pour trouver l'étiquette correspondant à la plus grande distance moyenne. Si deux étiquettes ont exactement la même plus grande distance moyenne (ce qui est peu probable mais possible), seule la première est prise en compte et la deuxième est ignorée.
