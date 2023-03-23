@@ -1,6 +1,6 @@
 from KNNClasses import KNNClasses
-from TestVect import TestVect
-from TextProcessing import TextProcessing
+from VectDistance import VectDistance
+from TestToVect import TestToVect
 import tkinter as tk
 import ast    
 """
@@ -303,7 +303,7 @@ def classify_main():
         Function_value=function_entry.get()
         
         # Appeler la méthode avec les paramètres saisis
-        vector_classify=TextProcessing.document_to_vector(Filename_value)
+        vector_classify=TestToVect.document_to_vector(Filename_value)
         print(vector_classify)
         match Function_value:
             case "":
@@ -311,13 +311,13 @@ def classify_main():
                 res=Kcl.classify(vector_classify,k_value)
             case "e":
                 print("euclidean_distance")
-                res=Kcl.classify(vector_classify,k_value,TestVect.euclidean_distance)
+                res=Kcl.classify(vector_classify,k_value,VectDistance.euclidean_distance)
             case "m":
                 print("manhattan_distance")
-                res=Kcl.classify(vector_classify,k_value,TestVect.manhattan_distance)
+                res=Kcl.classify(vector_classify,k_value,VectDistance.manhattan_distance)
             case "p":
                 print("pearson_correlation_coefficient")
-                res=Kcl.classify(vector_classify,k_value,TestVect.pearson_correlation_coefficient)
+                res=Kcl.classify(vector_classify,k_value,VectDistance.pearson_correlation_coefficient)
             case _:
                 res="erreur,la valeur Function n'est pas correcte"
         show_result_window(res)   
@@ -355,7 +355,7 @@ if __name__ == "__main__":
     with open ("./TestDocuments/description.txt") as input_file:
         description=input_file.read()
     # Convertir les documents de test en vecteurs
-    data=TextProcessing.TestDocument_to_vector()
+    data=TestToVect.TestDocument_to_vector()
     
     # Créer une instance de KNNClasses avec la description et les données
     Kcl=KNNClasses(description,data)

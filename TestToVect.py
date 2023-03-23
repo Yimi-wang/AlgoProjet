@@ -3,11 +3,11 @@ import copy
 import math
 import os
 """
-class TextProcessing:
+class TestToVect:
     def tokenize(text, tok_grm):
         Tokenise le texte en utilisant l'expression régulière fournie.
 
-        Arguments :
+        Paramètres :
             - text : Le texte à tokeniser (str)
             - tok_grm : L'expression régulière à utiliser pour la tokenisation (re.Pattern)
 
@@ -17,7 +17,7 @@ class TextProcessing:
     def vectorise(tokens):
         Crée un dictionnaire de fréquences pour les tokens donnés.
 
-        Arguments :
+        Paramètres :
             - tokens : Liste de tokens à vectoriser (list[str])
 
         Retour :
@@ -26,7 +26,7 @@ class TextProcessing:
     def read_texts(dossier_names: list):
         Lit les textes à partir d'une liste de noms de dossiers.
 
-        Arguments :
+        Paramètres :
             - dossier_names : Liste des noms de dossiers contenant les textes (list[str])
 
         Retour :
@@ -36,7 +36,7 @@ class TextProcessing:
 
         Lit un fichier texte et retourne un dictionnaire contenant le label et les vecteurs du texte.
 
-        Arguments :
+        Paramètres :
             - dossier_name : Le nom du dossier contenant le texte (str)
 
         Retour :
@@ -47,7 +47,7 @@ class TextProcessing:
 
         Filtrer les documents en fonction de la stoplist et de la fréquence des mots (si non_hapax).
 
-        Arguments :
+        Paramètres :
             - stoplist : Liste des mots à ignorer (set[str])
             - documents : Liste des documents à filtrer (list[dict])
             - non_hapax : Si True, conserver uniquement les mots dont la fréquence est supérieure à 1 (bool)
@@ -61,7 +61,7 @@ class TextProcessing:
     
         Calcule les scores tf-idf pour les documents donnés.
 
-        Arguments :
+        Paramètres :
             - documents : Liste des documents pour lesquels calculer les scores tf-idf (list[dict])
 
         Retour :
@@ -82,14 +82,14 @@ class TextProcessing:
         
         Lit, filtre et calcule les scores tf-idf pour un document spécifique.
 
-        Arguments :
+        Paramètres :
             - filename : Le nom du fichier contenant le document (str)
 
         Retour :
             - vecteurs
 """
 
-class TextProcessing:
+class TestToVect:
     french_stop_list={' ',',','.','?','-','—','gens', 'dont', 'hein', 'car', 'devers', 'onzième', 'vers', 'tel', 'voilà', 'après', 'hurrah', 'nombreuses', 'etant', 'doivent', 'cinq', 'effet', 'désormais', 'qui', 'fait', 'certain', 'maint', 'malgré', 'voient', 'certaine', 'tandis', 'tiens', 'vif', 'sous', 'certains', 'des', 'quarante', 'r', 'vôtre', 'à', 'onze', 'moins', 'quoi', 'revoici', 'plupart', 'vingt', 'essai', 'vive', 'dedans', 'diverses', 'brrr', 'nos', 'auront', 'valeur', 'leur', 'mêmes', 'n', 'premièrement', 'aux', 'ou', 'excepté', 'jusqu', 'dix-sept', 'bah', 'pan', 'ceux-là', 'neuf', 'par', 'près', 'vous-mêmes', 'vé', 'dix-neuf', 'lès', 'parmi', 'troisièmement', 'elles', 'durant', 'quel', 'tiennes', 'trente', 'tien', 'aucune', 'huit', 'chiche', 'tels', 'bon', 'combien', 'pfut', 'outre', 'deuxièmement', 'votre', 'cinquantième', 'celles', 'nous', 'vont', 'plutôt', 'autres', 'crac', 'différent', 'celui-là', 'autre', 'sixième', 'ayant', 'quelconque', 'allô', 'passé', 'dixième', 'aura', 'étaient', 'nôtre', 'j', 'comme', 'lesquelles', 'miennes', 'vu', 'maintenant', 'g', 'septième', 'personne', 'soi', 'chacun', 'ho', 'miens', 'fi', 'diverse', 'devant', 'pendant', 'telles', 'celle-là', 'ai', 'quinze', 'avais', 'na', 'voici', 'force', 'sinon', 'pièce', 'différents', 'lesquels', 'particulier', 'jusque', 'q', 'tellement', 'ici', 'chaque', 'qu', 'etc', 'un', 'celles-ci', 'avaient', 'il', 'toc', 'ceux', 'rien', 'lequel', 'toi', 'tout', 'concernant', 'tu', 'étions', 'dire', 'hum', 'treize', 'pas', 'plus', 'quant-à-soi', 'droite', 'lui', 'juste', 'devrait', 'olé', 'es', 'nommés', 'plouf', 'vous', 'té', 'je', 'au', 'début', 'cent', 'contre', 'dans', 'quatorze', 'fais', 'aie', 'tes', 'six', 'ne', 'mes', 'nôtres', 'elle', 'd', 'trop', 'sur', "aujourd'hui", 'va', 'avec', 'encore', 'peux', 'boum', 'quelles', 'façon', 'desquelles', 'sienne', 'tant', 'dring', 'et', 'que', 'merci', 'donc', 'notre', 'ollé', 'vais', 'ceux-ci', 'a', 'nous-mêmes', 'premier', 'avoir', 'comment', 'stop', 'faites', 'ci', 'ouf', 'aucun', 'nombreux', 'sans', 'deux', 'aujourd', 'troisième', 'différentes', 'floc', 'ceci', 'via', 'quatre', 'p', 'étais', 'en', 'pour', 'pff', 'w', 'ès', 'cher', 'hormis', 'x', 'clac', 'sien', 'devra', 'bien', 'moi-même', 'ses', 'ouias', 'cela', 'environ', 'seulement', 'alors', 'partant', 'toutes', 'état', 'auquel', 'divers', 'vivat', 'moyennant', 'ainsi', 'etre', 'quant', 'si', 'celui', 'chez', 'psitt', 'personnes', 'las', 'k', 'pfft', 'son', 'hue', 'hop', 'â', 'de', 'pourquoi', 'desquels', 'proche', 'suis', 'trois', 'cinquième', 'b', 'dès', 'fois', 'ta', 'vives', 'non', 'pif', 'beaucoup', 'flac', 'où', 'toute', 'allaient', 'différente', 'tsouin', 'auxquelles', 'quiconque', 'f', 'elle-même', 'tsoin', 'da', 'voie', 'leurs', 'sauf', 'quelque', 'hep', 'hou', 'houp', 'on', 'été', 'huitième', 'tic', 'douzième', 'sapristi', 'quoique', 'siennes', 'doit', 'mine', 'l', 'entre', 'soixante', 'debout', 'uns', 'avait', 'le', 'la', 'quand', 'ouste', 'surtout', 'aussi', "quelqu'un", 'assez', 'mille', 'toujours', 'compris', 'tienne', 'derrière', 'ce', 'avant', 'mienne', 'chut', 'dix-huit', 'très', 'tous', 'cinquante', 'mais', 'mien', 'mince', 'parce', 'est', 's', 'vôtres', 'hélas', 'sacrebleu', 'chères', 'soyez', 'quatrièmement', 'bravo', 'mon', 'ohé', 'touchant', 't', 'elles-mêmes', 'particulière', 'ton', 'oh', 'hui', 'paf', 'haut', 'vifs', 'u', 'néanmoins', 'douze', 'telle', 'longtemps', 'allons', 'faisant', 'cet', 'laquelle', 'puisque', 'quelle', 'c', 'seize', 'moi', 'oust', 'sa', 'z', 'depuis', 'chers', 'tac', 'être', 'aucuns', 'ore', 'euh', 'plusieurs', 'même', 'chère', 'certes', 'neuvième', 'deuxième', 'faisaient', 'ô', 'envers', 'ils', 'peu', 'seront', 'sujet', 'étant', 'lorsque', 'peut', 'attendu', 'dessus', 'toi-même', 'nouveaux', 'eh', 'celui-ci', 'ça', 'sera', 'clic', 'me', 'quatre-vingt', 'ont', 'hors', 'parole', 'hi', 'eu', 'duquel', 'ma', 'sept', 'selon', 'vas', 'delà', 'hé', 'quels', 'o', 'zut', 'i', 'abord', 'm', 'siens', 'unes', 'cinquantaine', 'revoilà', 'vos', 'dos', 'celle-ci', 'soit', 'celle', 'sont', 'se', 'e', 'cependant', 'mot', 'dehors', 'auxquels', 'du', 'quatrième', 'dix', 'certaines', 'y', 'ah', 'soi-même', 'feront', 'vlan', 'afin', 'quanta', 'te', 'peuvent', 'celles-là', 'pouah', 'hem', 'première', 'suivant', 'couic', 'ces', 'tenant', 'allo', 'dessous', 'lui-même', 'ha', 'particulièrement', 'v', 'font', 'était', 'eux', 'nul', 'une', 'les', 'bigre', 'là', 'h', 'ni', 'o|', 'eux-mêmes', 'plein', 'quelques', 'holà', 'cette', 'importe'}
     tok_grm=re.compile(r"""
         (?:etc.|p.ex.|cf.|M.)|
@@ -140,10 +140,10 @@ class TextProcessing:
                 # Ouverture et lecture du fichier
                 with open("./TestDocuments/"+dossier_name+"/"+file_name, mode="r", encoding="utf8") as input_file:
                     # Tokenisation de chaque ligne du fichier et ajout à la liste des tokens
-                    tokens = [tok for line in input_file for tok in TextProcessing.tokenize(line.strip(), tok_grm)]
+                    tokens = [tok for line in input_file for tok in TestToVect.tokenize(line.strip(), tok_grm)]
                     
                     # Vectorisation des tokens et ajout à la liste des vecteurs
-                    vector.append(TextProcessing.vectorise(tokens))
+                    vector.append(TestToVect.vectorise(tokens))
                     
             # Ajout des données du dossier (étiquette et vecteurs) à la liste de données
             data.append({'label': dossier_name, 'vectors': vector})
@@ -167,11 +167,11 @@ class TextProcessing:
         # Ouverture et lecture du fichier texte
         with open(dossier_name, mode="r", encoding="utf8") as input_file:
             # Tokenisation de chaque ligne du fichier texte
-            tokens = [tok for line in input_file for tok in TextProcessing.tokenize(line.strip(), tok_grm)]
+            tokens = [tok for line in input_file for tok in TestToVect.tokenize(line.strip(), tok_grm)]
             
             # Création du vecteur à partir des tokens
             vector=[]
-            vector.append(TextProcessing.vectorise(tokens))
+            vector.append(TestToVect.vectorise(tokens))
             
             # Ajout des données (label et vecteurs) à la liste 'data'
             data.append({'label': dossier_name, 'vectors': vector})

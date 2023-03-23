@@ -1,7 +1,6 @@
 import json
 import heapq
-from TestVect import TestVect
-from collections import Counter
+from VectDistance import VectDistance
 """
 Nom de la classe: KNNClasses
 
@@ -164,7 +163,7 @@ class KNNClasses:
                 
         # Si la fonction de similarité n'est pas fournie, on utilise la fonction 'sim_cosinus' par défaut.
         if sim_func is None:
-            sim_func = TestVect.sim_cosinus
+            sim_func = VectDistance.sim_cosinus
         # Initialisation d'un dictionnaire pour stocker les résultats de la comparaison entre le vecteur d'entrée et chaque vecteur de chaque classe.
         res_diff_vect = {}
         # On parcourt chaque classe.
@@ -184,7 +183,7 @@ class KNNClasses:
 
         # On décide de l'ordre de tri en fonction de la fonction de similarité fournie.
         # Si la fonction est une distance, on veut le tri croissant. Sinon, on veut le tri décroissant.
-        reverse_order = sim_func not in [TestVect.euclidean_distance,TestVect.manhattan_distance]
+        reverse_order = sim_func not in [VectDistance.euclidean_distance,VectDistance.manhattan_distance]
 
         # On utilise le module 'heapq' pour obtenir les 'k' éléments les plus similaires (ou les plus proches) du vecteur d'entrée.
         all_values = [v for values in res_diff_vect.values() for v in values]

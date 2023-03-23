@@ -1,7 +1,7 @@
 import math
 import numpy as np
 """
-API pour la classe TestVect :
+API pour la classe VectDistance :
 
 1. sim_cosinus(vec1: dict, vec2: dict) -> float:
     Calcule la similarité cosinus entre deux vecteurs représentés par des dictionnaires.
@@ -36,7 +36,7 @@ API pour la classe TestVect :
         float : Le coefficient de corrélation de Pearson entre les deux vecteurs.
 """
 
-class TestVect:    
+class VectDistance:    
     @staticmethod
     def is_valid_vector(dist):
         if not isinstance(dist, dict):
@@ -51,7 +51,7 @@ class TestVect:
     @staticmethod
     def sim_cosinus(vec1: dict, vec2: dict) -> float:
         # Determiner le vec1 et vec2 est une vector ou pas
-        if not (TestVect.is_valid_vector(vec1) and TestVect.is_valid_vector(vec2) ):
+        if not (VectDistance.is_valid_vector(vec1) and VectDistance.is_valid_vector(vec2) ):
             raise ValueError("vec1 et vec2 doit etre un forme de str:int ou str:float")
         
         # Obtenir les clés communes entre les deux vecteurs
@@ -84,7 +84,7 @@ class TestVect:
     @staticmethod
     def euclidean_distance(vec1: dict, vec2: dict) -> float:
         # Determiner le vec1 et vec2 est une vector ou pas
-        if not (TestVect.is_valid_vector(vec1) and TestVect.is_valid_vector(vec2) ):
+        if not (VectDistance.is_valid_vector(vec1) and VectDistance.is_valid_vector(vec2) ):
             raise ValueError("vec1 et vec2 doit etre un forme de str:int ou str:float")
         
         distance = 0
@@ -107,7 +107,7 @@ class TestVect:
     @staticmethod
     def manhattan_distance(vec1: dict, vec2: dict) -> float:
         # Determiner le vec1 et vec2 est une vector ou pas
-        if not (TestVect.is_valid_vector(vec1) and TestVect.is_valid_vector(vec2) ):
+        if not (VectDistance.is_valid_vector(vec1) and VectDistance.is_valid_vector(vec2) ):
             raise ValueError("vec1 et vec2 doit etre un forme de str:int ou str:float")
         
         distance = 0
@@ -126,7 +126,7 @@ class TestVect:
     @staticmethod
     def pearson_correlation_coefficient(vect1, vect2):
         # Determiner le vec1 et vec2 est une vector ou pas
-        if not (TestVect.is_valid_vector(vect1) and TestVect.is_valid_vector(vect2) ):
+        if not (VectDistance.is_valid_vector(vect1) and VectDistance.is_valid_vector(vect2) ):
             raise ValueError("vec1 et vec2 doit etre un forme de str:int ou str:float")
                 
         # Intersection des clés des deux dictionnaires
