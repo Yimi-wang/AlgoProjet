@@ -5,7 +5,7 @@ API pour la classe VectDistance :
 
 1. sim_cosinus(vec1: dict, vec2: dict) -> float:
     Calcule la similarité cosinus entre deux vecteurs représentés par des dictionnaires.
-    Arguments :
+    Paramètres :
         vec1 (dict) : Premier vecteur sous forme de dictionnaire.
         vec2 (dict) : Deuxième vecteur sous forme de dictionnaire.
     Retour :
@@ -13,7 +13,7 @@ API pour la classe VectDistance :
 
 2. euclidean_distance(vec1: dict, vec2: dict) -> float:
     Calcule la distance euclidienne entre deux vecteurs représentés par des dictionnaires.
-    Arguments :
+    Paramètres :
         vec1 (dict) : Premier vecteur sous forme de dictionnaire.
         vec2 (dict) : Deuxième vecteur sous forme de dictionnaire.
     Retour :
@@ -21,7 +21,7 @@ API pour la classe VectDistance :
 
 3. manhattan_distance(vec1: dict, vec2: dict) -> float:
     Calcule la distance de Manhattan entre deux vecteurs représentés par des dictionnaires.
-    Arguments :
+    Paramètres :
         vec1 (dict) : Premier vecteur sous forme de dictionnaire.
         vec2 (dict) : Deuxième vecteur sous forme de dictionnaire.
     Retour :
@@ -29,7 +29,7 @@ API pour la classe VectDistance :
 
 4. pearson_correlation_coefficient(vect1: dict, vect2: dict) -> float:
     Calcule le coefficient de corrélation de Pearson entre deux vecteurs représentés par des dictionnaires.
-    Arguments :
+    Paramètres :
         vec1 (dict) : Premier vecteur sous forme de dictionnaire.
         vec2 (dict) : Deuxième vecteur sous forme de dictionnaire.
     Retour :
@@ -47,7 +47,7 @@ class VectDistance:
             if not isinstance(value, (int, float)):
                 return False
         return True
-    # Définition de la fonction sim_cosinus pour calculer la similarité cosinus entre deux vecteurs
+    # Définition de la fonction sim_cosinus pour calculer la similarité cosinus entre deux vecteurs 
     @staticmethod
     def sim_cosinus(vec1: dict, vec2: dict) -> float:
         # Determiner le vec1 et vec2 est une vector ou pas
@@ -121,7 +121,6 @@ class VectDistance:
 
             # Calculer la somme des différences absolues
             distance += abs(value1 - value2)
-
         return distance
     @staticmethod
     def pearson_correlation_coefficient(vect1, vect2):
