@@ -45,6 +45,7 @@ changedata(self, new_data: List) -> None
     Paramètres:
     new_data (List): Nouvelles données à utiliser.
 """
+######ASD
 class KNNClasses:
     def __init__(self,description,data) -> None:
         # Initialise l'objet KNNClasses avec une description (chaîne) et des données (liste de dictionnaires)

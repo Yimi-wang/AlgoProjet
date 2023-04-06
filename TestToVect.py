@@ -97,12 +97,12 @@ class TestToVect:
         [\w\-]+'?| # peut-être
         .
         """,re.X)
-    @staticmethod
+
     def tokenize(text, tok_grm):
     # Tokenisation du texte en utilisant l'expression régulière fournie
         return tok_grm.findall(text)
 
-    @staticmethod
+
     def vectorise(tokens):
         # Initialisation d'un dictionnaire pour stocker les fréquences des tokens
         token_freq = {}
@@ -114,7 +114,7 @@ class TestToVect:
         # Retour du dictionnaire des fréquences des tokens
         return token_freq
 
-    @staticmethod
+
     def read_texts(dossier_names: list):
         # Initialisation de la liste de données à retourner
         data = []
@@ -151,7 +151,6 @@ class TestToVect:
         # Retour de la liste de données
         return data
     
-    @staticmethod
     def read_text(dossier_name: str):
         # Initialisation de la liste des données
         data = []
@@ -179,7 +178,6 @@ class TestToVect:
         # Retourne la liste des données
         return data
 
-    @staticmethod
     def filtrage(stoplist: set, documents, non_hapax):
         # Initialisation de la liste des documents filtrés
         documents_filtre = []
@@ -203,25 +201,22 @@ class TestToVect:
         # Retourne la liste des documents filtrés
         return documents_filtre
 
-    @staticmethod
     def tf_idf(documents: list) -> list:
         # Création d'une copie profonde des documents
         documents_new = copy.deepcopy(documents)
-        
-        # Récupération de l'ensemble des mots présents dans les documents
-        mots = {word for doc in documents for vector in doc["vectors"] for word in vector}
-        
-        # Calcul de la fréquence des documents pour chaque mot
-        freq_doc = {}
-        for word in mots:
-            freq_doc[word] = sum(1 for doc in documents for vector in doc["vectors"] if word in vector)
-
-        # Calcul du score tf-idf pour chaque mot dans chaque document
-        for doc in documents_new:
-            for vector in doc["vectors"]:
+        i=0
+        #parcour la list, donc le document est une dictionnaire
+        for document in documents:
+            # Récupération de l'ensemble des mots présents dans les documents
+            mots = {word for vector in document["vectors"] for word in vector}
+            freq_doc = {}
+            # Calcul du score tf-idf pour chaque mot dans chaque document
+            for word in mots:
+                freq_doc[word] = sum(1 for vector in document["vectors"] if word in vector)
+            for vector in documents_new[i]["vectors"]:
                 for word in vector:
                     vector[word]/= math.log(1 + freq_doc[word])
-        
+            i+=1
         # Retourne la liste des documents avec les scores tf-idf
         return documents_new
 

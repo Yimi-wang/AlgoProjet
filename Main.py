@@ -201,6 +201,7 @@ def on_save_as_json_click():
             result_text_widget.pack(padx=10, pady=10)
 
             # Création et ajout d'un bouton "Close" pour fermer la fenêtre
+
             close_button = tk.Button(result_window, text="Close", command=result_window.destroy)
             close_button.pack(pady=(0, 10))
         # Récupération de la valeur dans la zone de texte
